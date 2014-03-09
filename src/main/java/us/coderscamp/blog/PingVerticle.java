@@ -1,4 +1,5 @@
 package us.coderscamp.blog;
+
 /*
  * Copyright 2013 Red Hat, Inc.
  *
@@ -19,25 +20,23 @@ package us.coderscamp.blog;
 
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
+import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.platform.Verticle;
 
 /*
-This is a simple Java verticle which receives `ping` messages on the event bus and sends back `pong` replies
+ This is a simple Java verticle which receives `ping` messages on the event bus and sends back `pong` replies
  */
 public class PingVerticle extends Verticle {
 
-  public void start() {
+	public static final int SERVER_PORT = 8080;
+	public void start() {
+		vertx.createHttpServer().requestHandler(new Handler<HttpServerRequest>() {
+			@Override
+			public void handle(HttpServerRequest req){
+				req.response().end("Java rules");
+			}
+		}).listen(SERVER_PORT);
+		container.logger().info("Webserver started, listening to port: ".concat(String.valueOf(SERVER_PORT)));
 
-
-    vertx.eventBus().registerHandler("ping-address", new Handler<Message<String>>() {
-      @Override
-      public void handle(Message<String> message) {
-        message.reply("pong!");
-        container.logger().info("Sent back pong");
-      }
-    });
-
-    container.logger().info("PingVerticle started");
-
-  }
+	}
 }
